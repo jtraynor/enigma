@@ -6,21 +6,19 @@ type rotor struct {
 	triggers      []rune
 }
 
-type rotors []*rotor
+type rotors [3]*rotor
 
 // Encodes a letter through each rotor in turn. If inverse is false then the letter passes from right to left. If inverse is
 // true then the letter passes from left to right.
 func (rotors rotors) encode(letter rune, inverse bool) rune {
 	result := letter
 
-	maxIndex := len(rotors) - 1
-
 	if inverse {
-		for i := maxIndex; i >= 0; i-- {
+		for i := 2; i >= 0; i-- {
 			result = rotors[i].inverseEncode(result)
 		}
 	} else {
-		for i := 0; i <= maxIndex; i++ {
+		for i := 0; i <= 2; i++ {
 			result = rotors[i].encode(result)
 		}
 	}

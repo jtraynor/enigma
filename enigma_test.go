@@ -7,46 +7,47 @@ import (
 )
 
 type testRotorSettings struct {
-	name  string
-	ring  int
-	start rune
+	position string
+	name     string
+	ring     int
+	start    rune
 }
 
 var encodeTests = map[string]struct {
-	rotor1    testRotorSettings
-	rotor2    testRotorSettings
-	rotor3    testRotorSettings
-	reflector string
-	plugs     []string
-	input     string
-	expected  string
+	leftRotor   testRotorSettings
+	middleRotor testRotorSettings
+	rightRotor  testRotorSettings
+	reflector   string
+	plugs       []string
+	input       string
+	expected    string
 }{
 	"Fox Pangram": {
-		rotor1:    testRotorSettings{"VII", 15, 'K'},
-		rotor2:    testRotorSettings{"II", 21, 'I'},
-		rotor3:    testRotorSettings{"V", 15, 'C'},
-		reflector: "B",
-		plugs:     []string{"AB", "CD", "EF"},
-		input:     "The quick brown fox jumps over the lazy dog",
-		expected:  "UGNIJ SHAKK IHFLP WKJJZ EMYWT HUFEY CFLGU",
+		leftRotor:   testRotorSettings{"left", "V", 15, 'C'},
+		middleRotor: testRotorSettings{"middle", "II", 21, 'I'},
+		rightRotor:  testRotorSettings{"right", "VII", 15, 'K'},
+		reflector:   "B",
+		plugs:       []string{"AB", "CD", "EF"},
+		input:       "The quick brown fox jumps over the lazy dog",
+		expected:    "UGNIJ SHAKK IHFLP WKJJZ EMYWT HUFEY CFLGU",
 	},
 	"Sphinx Pangram": {
-		rotor1:    testRotorSettings{"VIII", 19, 'H'},
-		rotor2:    testRotorSettings{"II", 9, 'D'},
-		rotor3:    testRotorSettings{"IV", 4, 'Q'},
-		reflector: "B",
-		plugs:     []string{"KL", "MN", "OP"},
-		input:     "Sphinx of black quartz, judge my vow",
-		expected:  "QDJSX DDWOV GZJFH FFEJX PMIVS NAFL",
+		leftRotor:   testRotorSettings{"left", "IV", 4, 'Q'},
+		middleRotor: testRotorSettings{"middle", "II", 9, 'D'},
+		rightRotor:  testRotorSettings{"right", "VIII", 19, 'H'},
+		reflector:   "B",
+		plugs:       []string{"KL", "MN", "OP"},
+		input:       "Sphinx of black quartz, judge my vow",
+		expected:    "QDJSX DDWOV GZJFH FFEJX PMIVS NAFL",
 	},
 	"Liquor Pangram": {
-		rotor1:    testRotorSettings{"II", 14, 'I'},
-		rotor2:    testRotorSettings{"III", 25, 'C'},
-		rotor3:    testRotorSettings{"V", 6, 'Z'},
-		reflector: "C",
-		plugs:     []string{"UV", "WX", "YZ"},
-		input:     "Pack my box with five dozen liquor jugs",
-		expected:  "TUOJI JYBFG AZEMJ AJCSV KMOPN DNSMD AT",
+		leftRotor:   testRotorSettings{"left", "V", 6, 'Z'},
+		middleRotor: testRotorSettings{"middle", "III", 25, 'C'},
+		rightRotor:  testRotorSettings{"right", "II", 14, 'I'},
+		reflector:   "C",
+		plugs:       []string{"UV", "WX", "YZ"},
+		input:       "Pack my box with five dozen liquor jugs",
+		expected:    "TUOJI JYBFG AZEMJ AJCSV KMOPN DNSMD AT",
 	},
 }
 
@@ -55,17 +56,17 @@ func TestEncode(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			e := enigma.Enigma{}
 
-			err := e.AddRotor(tc.rotor1.name, tc.rotor1.ring, tc.rotor1.start)
+			err := e.SetRotor(tc.leftRotor.position, tc.leftRotor.name, tc.leftRotor.ring, tc.leftRotor.start)
 			if err != nil {
 				panic(err)
 			}
 
-			err = e.AddRotor(tc.rotor2.name, tc.rotor2.ring, tc.rotor2.start)
+			err = e.SetRotor(tc.middleRotor.position, tc.middleRotor.name, tc.middleRotor.ring, tc.middleRotor.start)
 			if err != nil {
 				panic(err)
 			}
 
-			err = e.AddRotor(tc.rotor3.name, tc.rotor3.ring, tc.rotor3.start)
+			err = e.SetRotor(tc.rightRotor.position, tc.rightRotor.name, tc.rightRotor.ring, tc.rightRotor.start)
 			if err != nil {
 				panic(err)
 			}
@@ -83,6 +84,106 @@ func TestEncode(t *testing.T) {
 			result := e.Encode(tc.input)
 			if result != tc.expected {
 				t.Errorf("Failed %s.\nExpected: %s.\nResult:   %s.", name, tc.expected, result)
+			}
+		})
+	}
+}
+
+var setRotorTests = map[string]struct {
+	rotor           testRotorSettings
+	isErrorExpected bool
+}{
+	"Invalid Rotor": {
+		rotor: testRotorSettings{
+			name: "X",
+		},
+		isErrorExpected: true,
+	},
+	"Invalid Position": {
+		rotor: testRotorSettings{
+			name:     "I",
+			position: "X",
+		},
+		isErrorExpected: true,
+	},
+	"Valid": {
+		rotor: testRotorSettings{
+			name:     "I",
+			position: "LEFT",
+			ring:     1,
+			start:    'A',
+		},
+	},
+}
+
+func TestSetRotor(t *testing.T) {
+	for name, tc := range setRotorTests {
+		t.Run(name, func(t *testing.T) {
+			e := enigma.Enigma{}
+
+			err := e.SetRotor(tc.rotor.position, tc.rotor.name, tc.rotor.ring, tc.rotor.start)
+			if tc.isErrorExpected == (err == nil) {
+				t.Errorf("Failed %s. Error: %v.", name, err)
+			}
+		})
+	}
+}
+
+var setReflectorTests = map[string]struct {
+	reflectorName   string
+	isErrorExpected bool
+}{
+	"Invalid Rotor": {
+		reflectorName:   "X",
+		isErrorExpected: true,
+	},
+	"Valid": {
+		reflectorName: "B",
+	},
+}
+
+func TestSetReflector(t *testing.T) {
+	for name, tc := range setReflectorTests {
+		t.Run(name, func(t *testing.T) {
+			e := enigma.Enigma{}
+
+			err := e.SetReflector(tc.reflectorName)
+			if tc.isErrorExpected == (err == nil) {
+				t.Errorf("Failed %s. Error: %v.", name, err)
+			}
+		})
+	}
+}
+
+var addPlugTests = map[string]struct {
+	plugs           []string
+	isErrorExpected bool
+}{
+	"Invalid Length": {
+		plugs:           []string{"X"},
+		isErrorExpected: true,
+	},
+	"Invalid Letter": {
+		plugs:           []string{"++"},
+		isErrorExpected: true,
+	},
+	"Duplicate": {
+		plugs:           []string{"AB", "BC"},
+		isErrorExpected: true,
+	},
+	"Valid": {
+		plugs: []string{"AB", "CD"},
+	},
+}
+
+func TestAddPlugs(t *testing.T) {
+	for name, tc := range addPlugTests {
+		t.Run(name, func(t *testing.T) {
+			e := enigma.Enigma{}
+
+			err := e.AddPlugs(tc.plugs)
+			if tc.isErrorExpected == (err == nil) {
+				t.Errorf("Failed %s. Error: %v.", name, err)
 			}
 		})
 	}

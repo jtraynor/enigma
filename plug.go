@@ -28,3 +28,7 @@ func (plugs plugs) replace(input rune) rune {
 
 	return input
 }
+
+func (plug plug) String() string {
+	return string(plug[0]) + string(plug[1])
+}

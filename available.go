@@ -113,3 +113,9 @@ var availableReflectors = map[string]rotor{
 		},
 	},
 }
+
+var rotorPositions = map[string]int{
+	"LEFT":   2,
+	"MIDDLE": 1,
+	"RIGHT":  0,
+}

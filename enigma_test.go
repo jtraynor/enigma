@@ -54,7 +54,7 @@ var encodeTests = map[string]struct {
 func TestEncode(t *testing.T) {
 	for name, tc := range encodeTests {
 		t.Run(name, func(t *testing.T) {
-			e := enigma.Enigma{}
+			e := enigma.New()
 
 			err := e.SetRotor(tc.leftRotor.position, tc.leftRotor.name, tc.leftRotor.ring, tc.leftRotor.start)
 			if err != nil {
@@ -106,6 +106,23 @@ var setRotorTests = map[string]struct {
 		},
 		isErrorExpected: true,
 	},
+	"Invalid Ring": {
+		rotor: testRotorSettings{
+			name:     "I",
+			position: "LEFT",
+			ring:     0,
+		},
+		isErrorExpected: true,
+	},
+	"Invalid Start": {
+		rotor: testRotorSettings{
+			name:     "I",
+			position: "LEFT",
+			ring:     1,
+			start:    ' ',
+		},
+		isErrorExpected: true,
+	},
 	"Valid": {
 		rotor: testRotorSettings{
 			name:     "I",
@@ -119,7 +136,7 @@ var setRotorTests = map[string]struct {
 func TestSetRotor(t *testing.T) {
 	for name, tc := range setRotorTests {
 		t.Run(name, func(t *testing.T) {
-			e := enigma.Enigma{}
+			e := enigma.New()
 
 			err := e.SetRotor(tc.rotor.position, tc.rotor.name, tc.rotor.ring, tc.rotor.start)
 			if tc.isErrorExpected == (err == nil) {
@@ -145,7 +162,7 @@ var setReflectorTests = map[string]struct {
 func TestSetReflector(t *testing.T) {
 	for name, tc := range setReflectorTests {
 		t.Run(name, func(t *testing.T) {
-			e := enigma.Enigma{}
+			e := enigma.New()
 
 			err := e.SetReflector(tc.reflectorName)
 			if tc.isErrorExpected == (err == nil) {
@@ -179,7 +196,7 @@ var addPlugTests = map[string]struct {
 func TestAddPlugs(t *testing.T) {
 	for name, tc := range addPlugTests {
 		t.Run(name, func(t *testing.T) {
-			e := enigma.Enigma{}
+			e := enigma.New()
 
 			err := e.AddPlugs(tc.plugs)
 			if tc.isErrorExpected == (err == nil) {

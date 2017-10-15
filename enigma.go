@@ -2,7 +2,6 @@ package enigma
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 	"unicode"
 )
@@ -14,21 +13,48 @@ type Enigma struct {
 	plugs     plugs
 }
 
+// New returns an instance of the Enigma machine initialised with sensible defaults.
+// Left Rotor: I. Middle Rotor: II. Right Rotor: III. Reflector: B. No plugs.
+func New() Enigma {
+	leftRotor := availableRotors["I"]
+	middleRotor := availableRotors["II"]
+	rightRotor := availableRotors["III"]
+	reflector := availableReflectors["B"]
+
+	return Enigma{
+		rotors: rotors{
+			&leftRotor,
+			&middleRotor,
+			&rightRotor,
+		},
+		reflector: reflector,
+	}
+}
+
 // Encode takes the input string, encodes each letter in turn and returns the result.
 // Input characters that are not letters are ignored.
 func (e Enigma) Encode(input string) string {
 	result := ""
 
-	for i, letter := range nonLetters.ReplaceAllLiteralString(strings.ToUpper(input), "") {
+	count := 0
+
+	for _, letter := range strings.ToUpper(input) {
+		if letter < 'A' || letter > 'Z' {
+			continue
+		}
+
 		// Every 5 letters add a space
-		if i > 0 && i%5 == 0 {
+		if count > 0 && count%5 == 0 {
 			result += " "
 		}
+
+		count++
 
 		e.rotors.rotate()
 
 		// Plugs on the way in
 		letter = e.plugs.replace(letter)
+
 		// Encode right to left
 		letter = e.rotors.encode(letter, false)
 
@@ -40,7 +66,7 @@ func (e Enigma) Encode(input string) string {
 		// Plugs on the way out
 		letter = e.plugs.replace(letter)
 
-		result += string(letter)
+		result += runeToString[letter]
 	}
 
 	return result
@@ -60,9 +86,18 @@ func (e *Enigma) SetRotor(position, name string, ringPosition int, startPosition
 		return fmt.Errorf("no such position: %s", position)
 	}
 
+	if ringPosition < 1 || ringPosition > 26 {
+		return fmt.Errorf("invalid ring position: %d", ringPosition)
+	}
+
+	start := unicode.ToUpper(startPosition)
+	if start < 'A' || start > 'Z' {
+		return fmt.Errorf("invalid start position: %c", start)
+	}
+
 	rotor.setRingPosition(ringPosition)
 
-	rotor.setStartPosition(unicode.ToUpper(startPosition))
+	rotor.setStartPosition(start)
 
 	e.rotors[index] = &rotor
 
@@ -118,5 +153,3 @@ func (e *Enigma) AddPlug(input string) error {
 
 	return nil
 }
-
-var nonLetters = regexp.MustCompile("[^A-Z]")

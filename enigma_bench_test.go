@@ -24,20 +24,17 @@ func BenchmarkWithLaterRotors(b *testing.B) {
 
 	err := e.SetRotor("left", "VI", 1, 'A')
 	if err != nil {
-		b.Errorf("Setup Failure: %v.", err)
-		return
+		b.Fatalf("Setup Failed: %v.", err)
 	}
 
 	err = e.SetRotor("middle", "VII", 1, 'A')
 	if err != nil {
-		b.Errorf("Setup Failure: %v.", err)
-		return
+		b.Fatalf("Setup Failed: %v.", err)
 	}
 
 	err = e.SetRotor("right", "VIII", 1, 'A')
 	if err != nil {
-		b.Errorf("Setup Failure: %v.", err)
-		return
+		b.Fatalf("Setup Failed: %v.", err)
 	}
 
 	for n := 0; n < b.N; n++ {
@@ -50,8 +47,7 @@ func BenchmarkWithPlugs(b *testing.B) {
 
 	err := e.AddPlugs([]string{"AB", "CD", "EF", "GH", "IJ", "KL", "NM", "OP", "QR", "ST", "UV", "WX", "YZ"})
 	if err != nil {
-		b.Errorf("Setup Failure: %v.", err)
-		return
+		b.Fatalf("Setup Failed: %v.", err)
 	}
 
 	for n := 0; n < b.N; n++ {
@@ -64,26 +60,22 @@ func BenchmarkWithLaterRotorsAndPlugs(b *testing.B) {
 
 	err := e.SetRotor("left", "VI", 1, 'A')
 	if err != nil {
-		b.Errorf("Setup Failure: %v.", err)
-		return
+		b.Fatalf("Setup Failed: %v.", err)
 	}
 
 	err = e.SetRotor("middle", "VII", 1, 'A')
 	if err != nil {
-		b.Errorf("Setup Failure: %v.", err)
-		return
+		b.Fatalf("Setup Failed: %v.", err)
 	}
 
 	err = e.SetRotor("right", "VIII", 1, 'A')
 	if err != nil {
-		b.Errorf("Setup Failure: %v.", err)
-		return
+		b.Fatalf("Setup Failed: %v.", err)
 	}
 
 	err = e.AddPlugs([]string{"AB", "CD", "EF", "GH", "IJ", "KL", "NM", "OP", "QR", "ST", "UV", "WX", "YZ"})
 	if err != nil {
-		b.Errorf("Setup Failure: %v.", err)
-		return
+		b.Fatalf("Setup Failed: %v.", err)
 	}
 
 	for n := 0; n < b.N; n++ {

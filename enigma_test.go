@@ -58,27 +58,27 @@ func TestEncode(t *testing.T) {
 
 			err := e.SetRotor(tc.leftRotor.position, tc.leftRotor.name, tc.leftRotor.ring, tc.leftRotor.start)
 			if err != nil {
-				panic(err)
+				t.Fatalf("Setup Failed: %v.", err)
 			}
 
 			err = e.SetRotor(tc.middleRotor.position, tc.middleRotor.name, tc.middleRotor.ring, tc.middleRotor.start)
 			if err != nil {
-				panic(err)
+				t.Fatalf("Setup Failed: %v.", err)
 			}
 
 			err = e.SetRotor(tc.rightRotor.position, tc.rightRotor.name, tc.rightRotor.ring, tc.rightRotor.start)
 			if err != nil {
-				panic(err)
+				t.Fatalf("Setup Failed: %v.", err)
 			}
 
 			err = e.SetReflector(tc.reflector)
 			if err != nil {
-				panic(err)
+				t.Fatalf("Setup Failed: %v.", err)
 			}
 
 			err = e.AddPlugs(tc.plugs)
 			if err != nil {
-				panic(err)
+				t.Fatalf("Setup Failed: %v.", err)
 			}
 
 			result := e.Encode(tc.input)

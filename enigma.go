@@ -16,16 +16,16 @@ type Enigma struct {
 // New returns an instance of the Enigma machine initialised with sensible defaults.
 // Left Rotor: I. Middle Rotor: II. Right Rotor: III. Reflector: B. No plugs.
 func New() Enigma {
-	leftRotor := availableRotors["I"]
+	leftRotor := availableRotors["III"]
 	middleRotor := availableRotors["II"]
-	rightRotor := availableRotors["III"]
+	rightRotor := availableRotors["I"]
 	reflector := availableReflectors["B"]
 
 	return Enigma{
 		rotors: rotors{
-			&leftRotor,
-			&middleRotor,
 			&rightRotor,
+			&middleRotor,
+			&leftRotor,
 		},
 		reflector: reflector,
 	}

@@ -5,6 +5,13 @@ A simple command-line interface for the Enigma cipher machine library.
 	go get github.com/jtraynor/enigma
 	go build -o enigma.exe github.com/jtraynor/enigma/cli
 
+## Example
+	enigma hello world
+	MFNCZ BBFZM
+
+	enigma MFNCZ BBFZM
+	HELLO WORLD
+
 ## Usage
 	enigma [OPTIONS] [MESSAGE]
 
